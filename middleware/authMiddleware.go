@@ -9,7 +9,9 @@ import (
 
 func Protect(reqRes *fiber.Ctx) error {
 	token := reqRes.Get("Authorization")
-
+	if token == "" {
+		return reqRes.Status(401).SendString("Thread carefully, you roam on unauthorized waters")
+	}
 	splitToken := strings.Split(token, "Bearer ")
 	clientToken := splitToken[1]
 

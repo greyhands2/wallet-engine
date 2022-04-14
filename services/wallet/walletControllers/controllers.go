@@ -49,5 +49,29 @@ func CreateWallet(reqRes *fiber.Ctx) error {
 }
 
 func GetWalletBalance(reqRes *fiber.Ctx) error {
+	var user_id string = reqRes.Locals("user_id").(string)
+
+	var wallet *aWallet.Wallet
+	//declare balance map data structure to later collect the result balance from the db
+	balance := make(map[string]float32)
+
+	err := walletCollection.FindOne(reqRes.Context(), bson.M{"user_id": user_id, "activated": true}).Decode(&wallet)
+
+	if err != nil {
+		return reqRes.Status(404).SendString("No wallet found")
+	}
+
+	balance["balance"] = wallet.Balance
+
+	return reqRes.Status(200).JSON(balance)
+
+}
+
+func DeactivateWallet(reqRes *fiber.Ctx) error {
+
+	return nil
+}
+
+func ActivateWallet(reqRes *fiber.Ctx) error {
 	return nil
 }
