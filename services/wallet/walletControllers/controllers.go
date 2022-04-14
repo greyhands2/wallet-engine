@@ -24,9 +24,13 @@ func CreateWallet(reqRes *fiber.Ctx) error {
 	id := primitive.NewObjectID()
 	wallet_id := id.Hex()
 	var balance float32 = 0.00
-	wallet = &aWallet.Wallet{Username: reqRes.Get("username"), User_id: reqRes.Get("user_id"), Created_at: Created_at, Updated_at: Updated_at, ID: id, Wallet_id: wallet_id, Activated: true, Balance: balance}
+	// we have to use type assertion here because values stored in reqRes.Locals are of type interface so we use type assertion to retrieve the real type and then assign them
+	var username string = reqRes.Locals("username").(string)
+	var user_id string = reqRes.Locals("user_id").(string)
 
-	count, err := walletCollection.CountDocuments(reqRes.Context(), bson.M{"username": reqRes.Get("username"), "user_id": reqRes.Get("user_id"), "email": reqRes.Get("email")})
+	wallet = &aWallet.Wallet{Username: username, User_id: user_id, Created_at: Created_at, Updated_at: Updated_at, ID: id, Wallet_id: wallet_id, Activated: true, Balance: balance}
+
+	count, err := walletCollection.CountDocuments(reqRes.Context(), bson.M{"user_id": user_id})
 
 	if err != nil {
 		return reqRes.Status(500).SendString("Oopss!!! Somehting went wrong, please try again later")

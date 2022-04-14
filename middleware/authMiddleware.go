@@ -23,10 +23,10 @@ func Protect(reqRes *fiber.Ctx) error {
 		return reqRes.Status(401).SendString("Thread carefully you roam on unauthorized waters")
 	}
 
-	reqRes.Set("email", claims.Email)
-	reqRes.Set("username", claims.Username)
+	reqRes.Locals("email", claims.Email)
+	reqRes.Locals("username", claims.Username)
 
-	reqRes.Set("user_id", claims.Uid)
+	reqRes.Locals("user_id", claims.Uid)
 
 	reqRes.Next()
 	return nil

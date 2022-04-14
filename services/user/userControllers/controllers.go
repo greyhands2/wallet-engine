@@ -48,6 +48,11 @@ func Signup(reqRes *fiber.Ctx) error {
 	//ensure email is unique
 	count, err := userCollection.CountDocuments(reqRes.Context(), bson.M{"email": user.Email})
 
+	if count > 0 {
+
+		return reqRes.Status(400).SendString("Username or Email already exist")
+	}
+
 	if err != nil {
 
 		return reqRes.Status(400).SendString("Error occurred while validating email")
@@ -103,6 +108,16 @@ func Signup(reqRes *fiber.Ctx) error {
 	var balance float32 = 0.00
 	wallet = &aWallet.Wallet{Username: user.Username, User_id: user.User_id, Created_at: Created_at, Updated_at: Updated_at, ID: id, Wallet_id: wallet_id, Activated: true, Balance: balance}
 	//for microservice architecture replace this next step with send an event to event bus to get to the wallet service for initiation of wallet
+
+	count, err = walletCollection.CountDocuments(reqRes.Context(), bson.M{"user_id": user.User_id})
+
+	if err != nil {
+		return reqRes.Status(500).SendString("Oopss!!! Somehting went wrong, please try again later")
+	}
+
+	if count > 0 {
+		return reqRes.Status(409).SendString("You already have a Wallet")
+	}
 	_, insertionErr = walletCollection.InsertOne(reqRes.Context(), wallet)
 
 	message := fmt.Sprintf("user %s created successfully", insertionNumber)
