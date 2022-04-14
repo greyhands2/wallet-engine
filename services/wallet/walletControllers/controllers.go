@@ -58,7 +58,10 @@ func GetWalletBalance(reqRes *fiber.Ctx) error {
 	err := walletCollection.FindOne(reqRes.Context(), bson.M{"user_id": user_id, "activated": true}).Decode(&wallet)
 
 	if err != nil {
-		return reqRes.Status(404).SendString("No wallet found")
+		if err == mongo.ErrNoDocuments {
+			return reqRes.Status(404).SendString("wallet not found")
+		}
+		return reqRes.Status(500).SendString("Oopss!! Something went wrong, please try again later")
 	}
 
 	balance["balance"] = wallet.Balance
@@ -67,11 +70,30 @@ func GetWalletBalance(reqRes *fiber.Ctx) error {
 
 }
 
-func DeactivateWallet(reqRes *fiber.Ctx) error {
+func ChangeWalletStatus(reqRes *fiber.Ctx) error {
+	var user_id string = reqRes.Locals("user_id").(string)
+	var status_type string = reqRes.Locals("status_type").(string)
 
-	return nil
-}
+	query := bson.M{"user_id": user_id}
+	var updateValue bool
+	var resultMessage string
+	if status_type == "deactivate" {
+		updateValue = false
+		resultMessage = "Successfully deactivated wallet"
+	} else {
+		updateValue = true
+		resultMessage = "Successfully activated wallet"
+	}
+	update := bson.M{"$set": bson.M{"activated": updateValue}}
 
-func ActivateWallet(reqRes *fiber.Ctx) error {
-	return nil
+	err := walletCollection.FindOneAndUpdate(reqRes.Context(), query, update).Err()
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return reqRes.Status(404).SendString("wallet not found")
+		}
+		return reqRes.Status(500).SendString("Oopss!! Something went wrong, please try again later")
+	}
+
+	return reqRes.Status(200).SendString(resultMessage)
 }

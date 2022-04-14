@@ -13,7 +13,15 @@ var HandleWalletRoutes = func(router fiber.Router) {
 	//Get wallet balance
 	router.Get("/:userId", middleware.Protect, wallet.GetWalletBalance)
 	//Deactivate wallet
-	router.Patch("deactivate/:userId", middleware.Protect, wallet.DeactivateWallet)
+	router.Patch("/deactivate/:userId", middleware.Protect, func(reqRes *fiber.Ctx) error {
+		reqRes.Locals("status_type", "deactivate")
+		reqRes.Next()
+		return nil
+	}, wallet.ChangeWalletStatus)
 	//Activate wallet
-	router.Patch("activate/:userId", middleware.Protect, wallet.ActivateWallet)
+	router.Patch("/activate/:userId", middleware.Protect, func(reqRes *fiber.Ctx) error {
+		reqRes.Locals("status_type", "activate")
+		reqRes.Next()
+		return nil
+	}, wallet.ChangeWalletStatus)
 }
