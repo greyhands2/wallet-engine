@@ -9,19 +9,24 @@ import (
 var HandleWalletRoutes = func(router fiber.Router) {
 	//create wallet is only used if for some reason the user wallet was unable to be created during sign up
 	//create wallet
-	router.Post("/:userId", middleware.Protect, wallet.CreateWallet)
+	router.Post("/", middleware.Protect, wallet.CreateWallet)
 	//Get wallet balance
-	router.Get("/:userId", middleware.Protect, wallet.GetWalletBalance)
+	router.Get("/", middleware.Protect, wallet.GetWalletBalance)
 	//Deactivate wallet
-	router.Patch("/deactivate/:userId", middleware.Protect, func(reqRes *fiber.Ctx) error {
+	router.Patch("/deactivateWallet", middleware.Protect, func(reqRes *fiber.Ctx) error {
 		reqRes.Locals("status_type", "deactivate")
 		reqRes.Next()
 		return nil
 	}, wallet.ChangeWalletStatus)
 	//Activate wallet
-	router.Patch("/activate/:userId", middleware.Protect, func(reqRes *fiber.Ctx) error {
+	router.Patch("/activateWallet", middleware.Protect, func(reqRes *fiber.Ctx) error {
 		reqRes.Locals("status_type", "activate")
 		reqRes.Next()
 		return nil
 	}, wallet.ChangeWalletStatus)
+
+	router.Put("/creditWallet/:cardId", middleware.Protect, wallet.CreditWallet)
+
+	router.Put("/debitWallet/:walletId", middleware.Protect, wallet.DebitWallet)
+
 }
