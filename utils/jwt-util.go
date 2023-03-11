@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
-
+	"github.com/greyhands2/wallet-engine/vipr"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/greyhands2/wallet-engine/config"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,7 +23,7 @@ type SignedDetails struct {
 
 var userCollection *mongo.Collection = config.OpenCollection(config.Client, "user")
 
-var SECRET_KEY string = "hjf8782r8h727r82763498242#ert&*@1mk98"
+var SECRET_KEY string = vipr.ViperEnvVariable("JWT_KEY")
 
 //generate new token
 func GenerateTokens(email string, username string, uid string) (signedToken string, signedRefreshToken string, err error) {

@@ -4,16 +4,17 @@ import (
 	"context"
 	"fmt"
 	"log"
-
+	"github.com/greyhands2/wallet-engine/vipr"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
-
+var connectionString string = vipr.ViperEnvVariable("MONGO_URL")
+var dbName string = vipr.ViperEnvVariable("MONGO_DB")
 func connect() *mongo.Client {
 	//client option
 
-	connectionString := "mongodb+srv://starq:Test1234@cluster0.phlp6.mongodb.net/test"
+	
 	fmt.Printf("the url is %s\n", connectionString)
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(connectionString))
 	if err != nil {
@@ -30,8 +31,8 @@ func connect() *mongo.Client {
 var Client *mongo.Client = connect()
 
 func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-
-	var collection *mongo.Collection = client.Database("wallet-engine").Collection(collectionName)
+	
+	var collection *mongo.Collection = client.Database(dbName).Collection(collectionName)
 
 	return collection
 }

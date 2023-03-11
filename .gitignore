@@ -1,0 +1,6 @@
+
+dist
+.vscode
+*.env
+*.code-workspace
+.cache/
