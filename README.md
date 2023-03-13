@@ -1,2 +1,2 @@
 # wallet-engine
-## https://walletengine1.docs.apiary.io/#reference
+## https://walletengine1.docs.apiary.io
